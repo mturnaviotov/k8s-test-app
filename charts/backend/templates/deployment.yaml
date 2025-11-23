@@ -74,11 +74,11 @@ spec:
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 8080
+              port: "{{ .Values.service.listenPort | default "8080" }}"
             periodSeconds: 30
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 8080
+              port: "{{ .Values.service.listenPort | default "8080" }}"
             initialDelaySeconds: 60
             periodSeconds: 30
