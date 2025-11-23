@@ -15,16 +15,16 @@ backend:
   ingress:
     enabled: true
     className: traefik
-    host: todo-backend.todo.svc.cluster.local
+    host: todo-dev-backend.todo-dev.svc.cluster.local
     serviceName: todo-backend
     tls:
     - secretName: todo-backend-tls
       hosts:
-      - todo-backend.todo.svc.cluster.local
+      - todo-dev-backend.todo-dev.svc.cluster.local
     annotations:
       kubernetes.io/ingress.className: traefik
       cert-manager.io/cluster-issuer: local-ca
-      external-dns.alpha.kubernetes.io/hostname: todo-backend.todo.svc.cluster.local
+      external-dns.alpha.kubernetes.io/hostname: todo-dev-backend.todo-dev.svc.cluster.local
       traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 
   image:

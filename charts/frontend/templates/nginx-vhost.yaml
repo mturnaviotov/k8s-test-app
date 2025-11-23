@@ -14,10 +14,10 @@ metadata:
 
 data:
   default.conf: |
-    {{- $svcName := default (printf "%s" .Values.backend.host ) }}
-    {{- $svcNS := default .Release.Namespace }}
+    {{- $svcName := default (include "frontend.fullname" .) .Values.service.name }}
+    {{- $svcNS := default .Release.Namespace .Values.service.namespace }}
     {{- $svcPort := int (default 8080 .Values.backend.port) }}
-    {{- $svcFQDN := printf "%s:%d" $svcName $svcPort }}
+    {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
     upstream backend {
       server {{ $svcFQDN }};
     }

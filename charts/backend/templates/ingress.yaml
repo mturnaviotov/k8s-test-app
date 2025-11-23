@@ -31,7 +31,7 @@ spec:
   {{- end }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.host | quote }}
+    - host: {{ if .Values.ingress.host }}"{{ .Values.ingress.host }}"{{ else }}"{{ (include "backend.fullname" .) | default "todo-frontend" }}.{{ .Release.Namespace }}.svc.cluster.local"{{ end }}
       http:
         paths:
           - path: /

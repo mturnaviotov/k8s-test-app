@@ -3,4 +3,4 @@ name: backend
 description: A Helm chart for Go Todo Application
 type: application
 # Chart version
-version: 0.0.3
+version: 0.0.4

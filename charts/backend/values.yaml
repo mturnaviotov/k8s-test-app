@@ -14,7 +14,7 @@ persistence:
 ingress:
   enabled: true
   className: traefik
-  host: todo-backend.todo.svc.cluster.local
+  #host: todo-backend.todo.svc.cluster.local
   serviceName: todo-backend
   tls:
   - secretName: todo-backend-tls

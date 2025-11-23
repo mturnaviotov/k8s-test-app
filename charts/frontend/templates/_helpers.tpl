@@ -7,7 +7,7 @@
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride -}}
 {{- else -}}
-{{- printf "%s-%s" .Release.Name (include "backend.name" .) | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name (include "frontend.name" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 

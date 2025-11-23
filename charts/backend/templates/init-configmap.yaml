@@ -19,7 +19,7 @@ data:
   init.sh: |
     #!/bin/sh
     # Wait for todoapp to be ready
-    {{- $svcName := default (printf "%s-%s" .Release.Name "backend" ) .Values.service.name }}
+    {{- $svcName := default (include "backend.fullname" .) .Values.service.name }}
     {{- $svcNS := default .Release.Namespace .Values.service.namespace }}
     {{- $svcPort := int (default 8080 .Values.service.port) }}
     {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
