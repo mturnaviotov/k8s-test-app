@@ -1,0 +1,26 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}"
+  labels:
+    release: kps
+    {{- include "labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/chart-name: {{ .Chart.Name }}
+spec:
+  jobLabel: "{{ .Release.Name }}-{{ .Chart.Name }}"
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+    {{- include "labels" . | nindent 6 }}
+  endpoints:
+  - port: http
+    path: /metrics
+    scheme: http
+    targetPort: {{ .Values.service.listenPort | default "8080" }}
+    interval: 15s
+{{- end }}

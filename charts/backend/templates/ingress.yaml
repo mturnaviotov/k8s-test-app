@@ -2,20 +2,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "backend.fullname" . }}
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}"
   labels:
-    app: {{ .Release.Name }}
-    app.kubernetes.io/app: {{ .Release.Name }}
-    app.kubernetes.io/name: {{ .Release.Name }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-    app.kubernetes.io/part-of: {{ .Chart.Name }}
-    app.kubernetes.io/component: {{ include "backend.fullname" . }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- include "labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+    meta.helm.sh/release-name: {{ .Release.Name }}
 spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
@@ -31,14 +25,14 @@ spec:
   {{- end }}
   {{- end }}
   rules:
-    - host: {{ if .Values.ingress.host }}"{{ .Values.ingress.host }}"{{ else }}"{{ (include "backend.fullname" .) | default "todo-frontend" }}.{{ .Release.Namespace }}.svc.cluster.local"{{ end }}
+    - host: {{ .Values.ingress.host | default (printf "%s-%s.%s.svc.cluster.local" .Release.Name .Chart.Name .Release.Namespace) }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.ingress.serviceName | default .Values.service.name }}
+                name: "{{ .Release.Name }}-{{ .Chart.Name }}"
                 port:
                   number: {{ .Values.ingress.port | default 8080 }}
 {{- end }}

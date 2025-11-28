@@ -1,9 +1,12 @@
 service:
   enabled: true
   type: ClusterIP
-  name: todo-backend
   port: 8080
   listenPort: 8080
+
+metrics:
+  enabled: true
+  release: kps #we should know this for service monitoring discovery
 
 persistence:
   enabled: true
@@ -14,8 +17,8 @@ persistence:
 ingress:
   enabled: true
   className: traefik
-  #host: todo-backend.todo.svc.cluster.local
-  serviceName: todo-backend
+  #host: todo-backend.zone.internal
+  # serviceName: py-backend
   tls:
   - secretName: todo-backend-tls
     hosts:
@@ -23,7 +26,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.className: traefik
     cert-manager.io/cluster-issuer: local-ca
-    external-dns.alpha.kubernetes.io/hostname: todo-backend.todo.svc.cluster.local
+    external-dns.alpha.kubernetes.io/hostname: todo-backend.zone.internal
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 
 image:
@@ -31,8 +34,8 @@ image:
   tag: 5efdb11 #latest
 resources:
   requests:
-    cpu: "100m"
-    memory: "64Mb"
+    cpu: 50m
+    memory: 32Mi
   limits:
-    cpu: "200m"
-    memory: "128Mb"
+    cpu: 100m
+    memory: 64Mi

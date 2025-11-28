@@ -2,7 +2,7 @@ backend:
   enabled: true
   service:
     type: ClusterIP
-    name: todo-backend
+    #name: todo-backend
     port: 8080
     listenPort: 8080
 
@@ -15,28 +15,29 @@ backend:
   ingress:
     enabled: true
     className: traefik
-    host: todo-dev-backend.todo-dev.svc.cluster.local
+    host: todo-backend.zone.internal
     serviceName: todo-backend
     tls:
     - secretName: todo-backend-tls
       hosts:
-      - todo-dev-backend.todo-dev.svc.cluster.local
+      - todo-backend.zone.internal
     annotations:
       kubernetes.io/ingress.className: traefik
       cert-manager.io/cluster-issuer: local-ca
-      external-dns.alpha.kubernetes.io/hostname: todo-dev-backend.todo-dev.svc.cluster.local
+      external-dns.alpha.kubernetes.io/hostname: todo-backend.zone.internal
       traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 
   image:
     repository: foxmuldercp/go-todo-backend
     tag: 5efdb11 #latest
+
   resources:
     requests:
-      cpu: "100m"
-      memory: "0.2G"
+      cpu: 50m
+      memory: 32Mi
     limits:
-      cpu: "200m"
-      memory: "0.5G"
+      cpu: 100m
+      memory: 64Mi
 
 frontend:
   service:
@@ -49,16 +50,16 @@ frontend:
   ingress:
     enabled: true
     className: traefik
-    host: todo-frontend.todo.svc.cluster.local
+    host: todo.zone.internal
     serviceName: todo-frontend
     tls:
     - secretName: todo-frontend-tls
       hosts:
-      - todo-frontend.todo.svc.cluster.local
+      - todo.zone.internal
     annotations:
       kubernetes.io/ingress.className: traefik
       cert-manager.io/cluster-issuer: local-ca
-      external-dns.alpha.kubernetes.io/hostname: todo-frontend.todo.svc.cluster.local
+      external-dns.alpha.kubernetes.io/hostname: todo.zone.internal
       traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
       #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
       #traefik.ingress.kubernetes.io/router.tls: "true"
@@ -69,8 +70,8 @@ frontend:
     tag: latest
   resources:
     requests:
-      cpu: "100m"
-      memory: "0.2G"
+      cpu: 50m
+      memory: 32Mi
     limits:
-      cpu: "200m"
-      memory: "0.5G"
+      cpu: 100m
+      memory: 64Mi

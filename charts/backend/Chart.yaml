@@ -2,5 +2,8 @@ apiVersion: v2
 name: backend
 description: A Helm chart for Go Todo Application
 type: application
+# image tag possible
+version: 0.0.5
+
 # Chart version
-version: 0.0.4
+#appVersion: 0.0.5

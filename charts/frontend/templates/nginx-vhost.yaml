@@ -14,12 +14,17 @@ metadata:
 
 data:
   default.conf: |
-    {{- $svcName := default (include "frontend.fullname" .) .Values.service.name }}
-    {{- $svcNS := default .Release.Namespace .Values.service.namespace }}
-    {{- $svcPort := int (default 8080 .Values.backend.port) }}
-    {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
+    {{- $AppName := default "backend" }}
+    {{- $defaultPort := "8080" }}
+    {{- $svcPort := int (default $defaultPort .Values.backend.port) }}
+
+    {{- $ReleaseName := .Release.Name }}
+    {{- $svcNS := default .Release.Namespace }}
+
+    {{- $defaultHost := printf "%s-%s.%s.svc.cluster.local" $ReleaseName $AppName $svcNS }}
+    {{- $svcFQDN := default $defaultHost .Values.backend.host }}
     upstream backend {
-      server {{ $svcFQDN }};
+      server {{ $svcFQDN }}:{{ $svcPort }};
     }
 
     server {
@@ -34,11 +39,18 @@ data:
       }
 
       location /todos {
+      {{ if eq $svcPort 443 }}
+        proxy_pass https://backend;
+        proxy_ssl_verify   off;
+        proxy_ssl_server_name on;
+      {{ else }}
         proxy_pass http://backend;
+      {{end }}
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_http_version 1.1;
+        proxy_set_header Connection "";
       }
 
       error_page 500 502 503 504 /50x.html;
