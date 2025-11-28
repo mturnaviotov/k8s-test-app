@@ -46,7 +46,7 @@ spec:
       #  fsGroup: 200
       containers:
         - name: {{ .Chart.Name | quote }}
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.version }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - containerPort: {{ .Values.service.listenPort | default "8080" }}

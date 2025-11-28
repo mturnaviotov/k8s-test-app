@@ -6,4 +6,4 @@ type: application
 version: 0.0.5
 
 # Chart version
-#appVersion: 0.0.5
+appVersion: 0.0.5
