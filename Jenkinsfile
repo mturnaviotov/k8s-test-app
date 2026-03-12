@@ -57,8 +57,7 @@ spec:
                         sh '''
                           cd backend
                           tag=`git rev-parse --short HEAD`
-                          #docker buildx build --no-cache --platform linux/amd64 --push -t foxmuldercp/go-todo-backend:${tag} .
-                          docker buildx build --no-cache --push -t foxmuldercp/go-todo-backend:${tag} .
+                          docker buildx build --no-cache --platform linux/amd64,linux/arm64/v8 --push -t foxmuldercp/go-todo-backend:${tag} .
                         '''
                     }
                     post {
@@ -69,8 +68,7 @@ spec:
                 }
                 stage('Frontend') {
                     steps {
-                        //sh 'cd frontend; docker buildx build --no-cache --platform linux/amd64 --push -t foxmuldercp/go-todo-frontend:latest .'
-                        sh 'cd frontend; docker buildx build --no-cache --push -t foxmuldercp/go-todo-frontend:latest .'
+                        sh 'cd frontend; docker buildx build --no-cache --platform linux/amd64,linux/arm64/v8 --push -t foxmuldercp/go-todo-frontend:latest .'
                     }
                     post {
                         always {

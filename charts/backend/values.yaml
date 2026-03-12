@@ -31,7 +31,7 @@ ingress:
 
 image:
   repository: foxmuldercp/go-todo-backend
-  tag: ded9df0 #latest
+  tag: latest
 resources:
   requests:
     cpu: 50m
