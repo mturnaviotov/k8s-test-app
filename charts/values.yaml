@@ -29,7 +29,7 @@ backend:
 
   image:
     repository: foxmuldercp/go-todo-backend
-    tag: 615266e #latest
+    tag: d8596e0
 
   resources:
     requests:
