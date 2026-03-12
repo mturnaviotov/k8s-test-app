@@ -11,9 +11,9 @@ ingress:
   #host: todo-frontend.todo.svc.cluster.local
   serviceName: todo-frontend
   tls:
-  - secretName: todo-frontend-tls
-    #hosts:
-    #- todo-frontend.todo.svc.cluster.local
+    - secretName: todo-frontend-tls
+      #hosts:
+      #- todo-frontend.todo.svc.cluster.local
   annotations:
     kubernetes.io/ingress.className: traefik
     cert-manager.io/cluster-issuer: local-ca

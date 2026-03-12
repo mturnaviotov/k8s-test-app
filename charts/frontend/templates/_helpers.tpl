@@ -19,4 +19,5 @@ app.kubernetes.io/name: {{ include "frontend.name" . }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/image: "{{ .Values.image.tag }}"
 {{- end }}

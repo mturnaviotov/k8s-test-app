@@ -3,7 +3,7 @@ name: backend
 description: A Helm chart for Go Todo Application
 type: application
 # image tag possible
-version: 0.0.6
+version: 0.0.7
 
 # Chart version
-appVersion: 0.0.6
+appVersion: 0.0.7
