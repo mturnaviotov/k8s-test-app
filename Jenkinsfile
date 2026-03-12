@@ -44,6 +44,8 @@ spec:
                 sh '''
                   apk add --no-cache docker git
                   git config --global --add safe.directory "*"
+                  docker buildx create --name mybuilder --use
+                  docker buildx install
                 '''
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'regpass', usernameVariable: 'reguser')]) {
                     sh 'docker login -u $reguser -p $regpass'
