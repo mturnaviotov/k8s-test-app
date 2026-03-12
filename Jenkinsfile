@@ -69,7 +69,7 @@ spec:
                 }
                 stage('Frontend') {
                     steps {
-                        #sh 'cd frontend; docker buildx build --no-cache --platform linux/amd64 --push -t foxmuldercp/go-todo-frontend:latest .'
+                        //sh 'cd frontend; docker buildx build --no-cache --platform linux/amd64 --push -t foxmuldercp/go-todo-frontend:latest .'
                         sh 'cd frontend; docker buildx build --no-cache --push -t foxmuldercp/go-todo-frontend:latest .'
                     }
                     post {
