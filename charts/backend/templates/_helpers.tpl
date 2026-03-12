@@ -10,4 +10,5 @@ app.kubernetes.io/name: {{ .Release.Name }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/part-of: {{ .Chart.Name }}
 app.kubernetes.io/component: {{ .Chart.Name }}
+image: "{{ .Values.image.tag }}"
 {{- end }}

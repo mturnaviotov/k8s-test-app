@@ -18,9 +18,9 @@ backend:
     host: todo-backend.zone.internal
     serviceName: todo-backend
     tls:
-    - secretName: todo-backend-tls
-      hosts:
-      - todo-backend.zone.internal
+      - secretName: todo-backend-tls
+        hosts:
+          - todo-backend.zone.internal
     annotations:
       kubernetes.io/ingress.className: traefik
       cert-manager.io/cluster-issuer: local-ca
@@ -29,7 +29,7 @@ backend:
 
   image:
     repository: foxmuldercp/go-todo-backend
-    tag: 2745b91 #latest
+    tag: 615266e #latest
 
   resources:
     requests:
@@ -44,7 +44,7 @@ frontend:
     port: 80
 
   backend:
-    host: todo-backend.todo.svc.cluster.local
+    host: todoapp-backend.todoapp.svc.cluster.local
     port: 8080
 
   ingress:
@@ -53,9 +53,9 @@ frontend:
     host: todo.zone.internal
     serviceName: todo-frontend
     tls:
-    - secretName: todo-frontend-tls
-      hosts:
-      - todo.zone.internal
+      - secretName: todo-frontend-tls
+        hosts:
+          - todo.zone.internal
     annotations:
       kubernetes.io/ingress.className: traefik
       cert-manager.io/cluster-issuer: local-ca

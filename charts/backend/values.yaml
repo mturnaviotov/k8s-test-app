@@ -20,9 +20,9 @@ ingress:
   #host: todo-backend.zone.internal
   # serviceName: py-backend
   tls:
-  - secretName: todo-backend-tls
-    hosts:
-    - todo-backend.todo.svc.cluster.local
+    - secretName: todo-backend-tls
+      hosts:
+        - todo-backend.todo.svc.cluster.local
   annotations:
     kubernetes.io/ingress.className: traefik
     cert-manager.io/cluster-issuer: local-ca
