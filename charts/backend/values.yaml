@@ -5,7 +5,7 @@ service:
   listenPort: 8080
 
 metrics:
-  enabled: false
+  enabled: true
   release: kps #we should know this for service monitoring discovery
 
 persistence:
