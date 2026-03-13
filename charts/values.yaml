@@ -1,3 +1,8 @@
+metrics:
+  enabled: false
+  # Should be equal to the PromStack release name
+  release: kps
+
 backend:
   enabled: true
   service:
