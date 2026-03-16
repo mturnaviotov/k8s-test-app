@@ -45,7 +45,7 @@ func (m *Metrics) IncTodoUpdated() {
 
 func (m *Metrics) IncTodoDeleted() {
 	m.mu.Lock()
-	m.TodoNotFound++
+	m.TodoDeleted++
 	m.mu.Unlock()
 }
 

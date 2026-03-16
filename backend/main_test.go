@@ -1,38 +1,35 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
-	bbolt "go.etcd.io/bbolt"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // --- Helper to create temporary DB for CRUD tests ---
-func setupTestDB(t *testing.T) *bbolt.DB {
-	tmpfile := filepath.Join(os.TempDir(), fmt.Sprintf("testdb_%d.db", time.Now().UnixNano()))
-	db, err := bbolt.Open(tmpfile, 0666, nil)
+func setupTestDB(t *testing.T) *sql.DB {
+	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		t.Fatalf("failed to open test db: %v", err)
 	}
 	t.Cleanup(func() {
 		db.Close()
-		os.Remove(tmpfile)
 	})
 
-	// create bucket
-	err = db.Update(func(tx *bbolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte(bucketName))
-		return err
-	})
+	// create table
+	_, err = db.Exec(`CREATE TABLE todos (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		text TEXT NOT NULL,
+		done BOOLEAN NOT NULL DEFAULT FALSE
+	)`)
 	if err != nil {
-		t.Fatalf("failed to create bucket: %v", err)
+		t.Fatalf("failed to create table: %v", err)
 	}
 
 	return db

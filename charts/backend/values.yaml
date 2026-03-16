@@ -4,15 +4,27 @@ service:
   port: 8080
   listenPort: 8080
 
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "changeme"
+    username: "todoapp"
+    password: "todoapp"
+    database: "todoapp"
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+
 metrics:
   enabled: true
   release: kps #we should know this for service monitoring discovery
 
-persistence:
-  enabled: true
-  size: 256M
-  storageClass: "" #"local-path"
-  accessMode: ReadWriteOnce
+# persistence:
+#   enabled: false  # No longer needed since we use PostgreSQL
+#   size: 256M
+#   storageClass: "" #"local-path"
+#   accessMode: ReadWriteOnce
 
 ingress:
   enabled: true

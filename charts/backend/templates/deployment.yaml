@@ -29,19 +29,6 @@ spec:
         prometheus.io/port: {{ .Values.service.listenPort | default "8080" | quote }}
         prometheus.io/path: "/metrics"
     spec:
-      volumes:
-        {{- if .Values.persistence.enabled }}
-        - name: data
-          persistentVolumeClaim:
-            claimName: "{{ .Release.Name }}-{{ .Chart.Name }}"
-        {{- else }}
-        - name: data
-          emptyDir: {}
-        {{- end }}
-        - name: init-script
-          configMap:
-            name: "{{ .Release.Name }}-{{ .Chart.Name }}-init-script"
-            defaultMode: 0755
       #securityContext:
       #  fsGroup: 200
       containers:
@@ -54,13 +41,21 @@ spec:
           env:
             - name: listenPort
               value: "{{ .Values.service.listenPort | default "8080" }}"
-            - name: storage
-              value: "{{ .Values.service.storage | default "/data/todoapp.db" }}"
+            - name: DB_HOST
+              value: "{{ .Release.Name }}-postgresql"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "{{ .Values.postgresql.auth.username }}"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}-postgresql"
+                  key: password
+            - name: DB_NAME
+              value: "{{ .Values.postgresql.auth.database }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: data
-              mountPath: /data
           readinessProbe:
             httpGet:
                 path: /healthz
