@@ -20,12 +20,6 @@ metrics:
   enabled: true
   release: kps #we should know this for service monitoring discovery
 
-# persistence:
-#   enabled: false  # No longer needed since we use PostgreSQL
-#   size: 256M
-#   storageClass: "" #"local-path"
-#   accessMode: ReadWriteOnce
-
 ingress:
   enabled: true
   className: traefik

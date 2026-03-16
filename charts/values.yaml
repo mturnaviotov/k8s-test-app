@@ -11,11 +11,17 @@ backend:
     port: 8080
     listenPort: 8080
 
-  persistence:
+  postgresql:
     enabled: true
-    size: 256M
-    storageClass: "" #"local-path"
-    accessMode: ReadWriteOnce
+    auth:
+      postgresPassword: "changeme"
+      username: "todoapp"
+      password: "todoapp"
+      database: "todoapp"
+    primary:
+      persistence:
+        enabled: true
+        size: 1Gi
 
   ingress:
     enabled: true
@@ -34,7 +40,7 @@ backend:
 
   image:
     repository: foxmuldercp/go-todo-backend
-    tag: 5bde17c
+    tag: 4fcec92
 
   resources:
     requests:
