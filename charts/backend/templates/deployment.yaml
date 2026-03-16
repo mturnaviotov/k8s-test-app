@@ -50,8 +50,18 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Release.Name }}-postgresql"
+                  name: "todo-postgresql"
                   key: password
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "todo-postgresql"
+                  key: username
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: "todo-postgresql"
+                  key: database
             - name: DB_NAME
               value: "{{ .Values.postgresql.auth.database }}"
           resources:
