@@ -4,12 +4,6 @@ metadata:
   name: "{{ .Release.Name }}-{{ .Chart.Name }}"
   labels:
     {{- include "labels" . | nindent 4 }}
-  annotations:
-    meta.helm.sh/release-name: {{ .Release.Name }}
-    meta.helm.sh/chart-name: {{ .Chart.Name }}
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "{{ .Values.service.port | default "8080" }}"
-    prometheus.io/path: "/metrics"
 spec:
   type: {{ .Values.service.type }}
   ports:

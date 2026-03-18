@@ -1,10 +1,10 @@
-metrics:
-  enabled: false
-  # Should be equal to the PromStack release name
-  release: kps
-
 backend:
   enabled: true
+
+  image:
+    repository: foxmuldercp/go-todo-backend
+    tag: 5bde17c
+
   service:
     type: ClusterIP
     #name: todo-backend
@@ -38,9 +38,13 @@ backend:
       external-dns.alpha.kubernetes.io/hostname: todo-backend.zone.internal
       traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 
-  image:
-    repository: foxmuldercp/go-todo-backend
-    tag: 4fcec92
+  metrics:
+    enabled: false
+    # Should be equal to the PromStack release name
+    release: kps
+
+  networkPolicy:
+    enabled: true
 
   resources:
     requests:

@@ -16,10 +16,6 @@ postgresql:
       enabled: true
       size: 1Gi
 
-metrics:
-  enabled: true
-  release: kps #we should know this for service monitoring discovery
-
 ingress:
   enabled: true
   className: traefik
@@ -45,3 +41,21 @@ resources:
   limits:
     cpu: 100m
     memory: 64Mi
+
+securityContext:
+  enabled: true
+  data:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+# If no Prometheus is installed, set this to false due to absent ServiceMonitor CRDs
+# If Prometheus is installed, set this to true and update release name
+metrics:
+  enabled: true
+  release: kps #we should know this for service monitoring discovery
+
+# If no NetworkPolicy is installed, set this to false. Flannel doesn't support NetworkPolicy
+# If NetworkPolicy is installed via non Flannel CNI, you can use this to secure the cluster
+networkPolicy:
+  enabled: true

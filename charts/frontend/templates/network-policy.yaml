@@ -1,0 +1,42 @@
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-policy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app.kubernetes.io/name: {{ .Chart.Name | quote }}
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+      from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: todo
+              app.kubernetes.io/name: backend
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+      to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: todo
+              app.kubernetes.io/name: backend
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+      to:
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+          namespaceSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
