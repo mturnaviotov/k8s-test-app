@@ -14,7 +14,7 @@ postgresql:
   primary:
     persistence:
       enabled: true
-      size: 1Gi
+      size: 64Mi
 
 ingress:
   enabled: true
