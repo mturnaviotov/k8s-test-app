@@ -33,3 +33,8 @@ resources:
   limits:
     cpu: "200m"
     memory: "0.5G"
+
+# If no NetworkPolicy is installed, set this to false. Flannel doesn't support NetworkPolicy
+# If NetworkPolicy is installed via non Flannel CNI, you can use this to secure the cluster
+networkPolicy:
+  enabled: true

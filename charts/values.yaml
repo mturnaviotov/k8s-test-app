@@ -90,3 +90,6 @@ frontend:
     limits:
       cpu: 100m
       memory: 64Mi
+
+  networkPolicy:
+    enabled: true
