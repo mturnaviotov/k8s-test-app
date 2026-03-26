@@ -39,7 +39,7 @@ backend:
       traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 
   metrics:
-    enabled: false
+    enabled: true
     # Should be equal to the PromStack release name
     release: kps
 
