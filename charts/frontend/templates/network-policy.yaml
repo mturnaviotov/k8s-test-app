@@ -12,12 +12,16 @@ spec:
   ingress:
     - ports:
         - protocol: TCP
-          port: 8080
+          port: 80
       from:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/instance: todo
-              app.kubernetes.io/name: backend
+        - ipBlock:
+            cidr: 192.168.0.0/16
+    - ports:
+        - protocol: TCP
+          port: 80
+      from:
+        - ipBlock:
+            cidr: 10.0.0.0/8
   egress:
     - ports:
         - protocol: TCP
