@@ -14,11 +14,27 @@ import (
 )
 
 var db *sql.DB
+var tableCreated bool
 
 type Todo struct {
 	ID   uint64 `json:"id"`
 	Text string `json:"text"`
 	Done bool   `json:"done"`
+}
+
+func ensureTableExists() error {
+	if tableCreated {
+		return nil
+	}
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS todos (
+		id SERIAL PRIMARY KEY,
+		text TEXT NOT NULL,
+		done BOOLEAN NOT NULL DEFAULT FALSE
+	)`)
+	if err == nil {
+		tableCreated = true
+	}
+	return err
 }
 
 func main() {
@@ -57,35 +73,36 @@ func main() {
 	}
 	defer db.Close()
 
-	// Test the connection
+	// Test the connection (warn but don't fail startup if down)
 	if err = db.Ping(); err != nil {
-		log.Fatalf("{\"level\":\"error\", \"message\":\"ping db: %v\"}", err)
+		log.Printf("{\"level\":\"warn\", \"message\":\"Database connection ping failed on startup (will retry on requests): %v\"}", err)
+	} else {
+		// Try to create table if database is accessible on startup
+		if err := ensureTableExists(); err != nil {
+			log.Printf("{\"level\":\"warn\", \"message\":\"Failed to create table on startup: %v\"}", err)
+		}
 	}
 
-	// Create table if not exists
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS todos (
-		id SERIAL PRIMARY KEY,
-		text TEXT NOT NULL,
-		done BOOLEAN NOT NULL DEFAULT FALSE
-	)`)
-	if err != nil {
-		log.Fatalf("{\"level\":\"error\", \"message\":\"create table: %v\"}", err)
-	}
-
-	http.HandleFunc("/healthz", enableCORS(healthHandler))
-	http.HandleFunc("/todos", enableCORS(todosHandler))
-	http.HandleFunc("/todos/", enableCORS(todoHandler))
-	http.HandleFunc("/metrics", metrics)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", healthHandler)
+	mux.HandleFunc("/todos", todosHandler)
+	mux.HandleFunc("/todos/", todoHandler)
+	mux.HandleFunc("/metrics", metrics)
 
 	addr := ":" + listenPort
 	log.Printf("{\"level\":\"info\", \"listening on\":\"%s\", \"db\":\"%s\"}", addr, dbName)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.ListenAndServe(addr, enableCORSMiddleware(mux)))
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	if err := db.Ping(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"DB not accessible\"}")
+		return
+	}
+	if err := ensureTableExists(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "{\"level\":\"error\", \"message\":\"Database initialization failed: %v\"}", err)
 		return
 	}
 	AppMetrics.IncRequests()
@@ -110,7 +127,17 @@ func enableCORS(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// enableCORSMiddleware wraps a standard http.Handler with enableCORS middleware.
+func enableCORSMiddleware(next http.Handler) http.Handler {
+	return enableCORS(next.ServeHTTP)
+}
+
 func todosHandler(w http.ResponseWriter, r *http.Request) {
+	if err := ensureTableExists(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "{\"level\":\"error\", \"message\":\"Database initialization failed: %v\"}", err)
+		return
+	}
 	switch r.Method {
 	case http.MethodGet:
 		listTodos(w)
@@ -122,6 +149,11 @@ func todosHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func todoHandler(w http.ResponseWriter, r *http.Request) {
+	if err := ensureTableExists(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "{\"level\":\"error\", \"message\":\"Database initialization failed: %v\"}", err)
+		return
+	}
 	idStr := strings.TrimPrefix(r.URL.Path, "/todos/")
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
