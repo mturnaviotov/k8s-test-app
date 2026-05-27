@@ -1,0 +1,72 @@
+### Google Cloud Run CI CD from Github Actions example
+
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+env:
+  PROJECT_ID: test-122133
+  REGION: europe-central2
+  GAR_REPO: app-repo
+  BACKEND_SERVICE: backend-api
+  FRONTEND_SERVICE: frontend-app
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Authentication with Google Cloud
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }} # Set this in GitHub secrets
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # Authenticate Docker with Google Artifact Registry
+      - name: Docker Auth
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      # Build and push Backend Image
+      - name: Build & Push Backend
+        run: |
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.BACKEND_SERVICE }}"
+          docker build -t "$IMAGE_PATH:${{ github.sha }}" -t "$IMAGE_PATH:latest" ./backend
+          docker push "$IMAGE_PATH:${{ github.sha }}"
+          docker push "$IMAGE_PATH:latest"
+
+      # Build and push Frontend Image
+      - name: Build & Push Frontend
+        run: |
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.FRONTEND_SERVICE }}"
+          docker build -t "$IMAGE_PATH:${{ github.sha }}" -t "$IMAGE_PATH:latest" ./frontend
+          docker push "$IMAGE_PATH:${{ github.sha }}"
+          docker push "$IMAGE_PATH:latest"
+
+      # Deploy Backend to Cloud Run
+      - name: Deploy Backend to Cloud Run
+        run: |
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }}"
+          gcloud run deploy ${{ env.BACKEND_SERVICE }} \
+            --image "$IMAGE_PATH" \
+            --region ${{ env.REGION }} \
+            --project ${{ env.PROJECT_ID }}
+
+      # Deploy Frontend to Cloud Run
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }}"
+          gcloud run deploy ${{ env.FRONTEND_SERVICE }} \
+            --image "$IMAGE_PATH" \
+            --region ${{ env.REGION }} \
+            --project ${{ env.PROJECT_ID }}
