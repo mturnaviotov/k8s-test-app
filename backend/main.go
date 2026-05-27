@@ -73,8 +73,8 @@ func main() {
 	}
 
 	http.HandleFunc("/healthz", healthHandler)
-	http.HandleFunc("/todos", todosHandler)
-	http.HandleFunc("/todos/", todoHandler)
+	http.HandleFunc("/todos", enableCORS(todosHandler))
+	http.HandleFunc("/todos/", enableCORS(todoHandler))
 	http.HandleFunc("/metrics", metrics)
 
 	addr := ":" + listenPort
@@ -94,6 +94,21 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "OK")
 }
 
+// enableCORS is a middleware that adds CORS headers and handles preflight OPTIONS requests.
+func enableCORS(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next(w, r)
+	}
+}
 
 func todosHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {

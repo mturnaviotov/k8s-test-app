@@ -117,3 +117,49 @@ func TestTodoCRUD(t *testing.T) {
 	}
 
 }
+
+func TestCORS(t *testing.T) {
+	dummyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	corsHandler := enableCORS(dummyHandler)
+
+	// Test OPTIONS preflight request
+	req := httptest.NewRequest(http.MethodOptions, "/todos", nil)
+	w := httptest.NewRecorder()
+	corsHandler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected status 200 for OPTIONS, got %d", w.Code)
+	}
+
+	if w.Header().Get("Access-Control-Allow-Origin") != "*" {
+		t.Errorf("expected Access-Control-Allow-Origin to be '*', got %q", w.Header().Get("Access-Control-Allow-Origin"))
+	}
+	if w.Header().Get("Access-Control-Allow-Methods") != "GET, POST, PUT, DELETE, OPTIONS" {
+		t.Errorf("expected Access-Control-Allow-Methods to be 'GET, POST, PUT, DELETE, OPTIONS', got %q", w.Header().Get("Access-Control-Allow-Methods"))
+	}
+	if w.Header().Get("Access-Control-Allow-Headers") != "Content-Type, Authorization" {
+		t.Errorf("expected Access-Control-Allow-Headers to be 'Content-Type, Authorization', got %q", w.Header().Get("Access-Control-Allow-Headers"))
+	}
+
+	// Test regular GET request gets CORS headers and executes next handler
+	req = httptest.NewRequest(http.MethodGet, "/todos", nil)
+	w = httptest.NewRecorder()
+	corsHandler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected status 200, got %d", w.Code)
+	}
+
+	if w.Header().Get("Access-Control-Allow-Origin") != "*" {
+		t.Errorf("expected Access-Control-Allow-Origin to be '*', got %q", w.Header().Get("Access-Control-Allow-Origin"))
+	}
+
+	if w.Body.String() != "OK" {
+		t.Errorf("expected body 'OK', got %q", w.Body.String())
+	}
+}
+
