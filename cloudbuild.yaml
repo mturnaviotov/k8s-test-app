@@ -92,6 +92,9 @@ steps:
     id: "deploy-frontend"
     waitFor: ["push-frontend-sha"]
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 images:
   - "${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_BACKEND_SERVICE}:$SHORT_SHA"
   - "${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_BACKEND_SERVICE}:latest"
