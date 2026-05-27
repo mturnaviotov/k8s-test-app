@@ -22,7 +22,7 @@ steps:
     args:
       - "build"
       - "--build-arg"
-      - "REACT_APP_API_URL=https://${_BACKEND_SERVICE}-${_PREFIX}.${_REGION}.run.app"
+      - "REACT_APP_API_URL=https://${_BACKEND_SERVICE}-${_PREFIX}.${_REGION}.run.app/todos"
       - "-t"
       - "${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_FRONTEND_SERVICE}:$SHORT_SHA"
       - "-t"
