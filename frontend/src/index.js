@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
-const API_URL = ''; // your backend URL if needed
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 export default function App() {
     const [todos, setTodos] = useState([]);
