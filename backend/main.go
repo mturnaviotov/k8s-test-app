@@ -72,7 +72,7 @@ func main() {
 		log.Fatalf("{\"level\":\"error\", \"message\":\"create table: %v\"}", err)
 	}
 
-	http.HandleFunc("/healthz", healthHandler)
+	http.HandleFunc("/healthz", enableCORS(healthHandler))
 	http.HandleFunc("/todos", enableCORS(todosHandler))
 	http.HandleFunc("/todos/", enableCORS(todoHandler))
 	http.HandleFunc("/metrics", metrics)
