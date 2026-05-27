@@ -12,5 +12,5 @@ ENV Storage=/data/todos.db
 ENV listenPort=8080
 RUN mkdir -p /data
 EXPOSE 8080
-HEALTHCHECK CMD wget -qO- http://localhost:8080/healthz || exit 1
+HEALTHCHECK CMD wget -qO- http://localhost:8080/health || exit 1
 ENTRYPOINT ["/todoapp"]

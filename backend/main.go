@@ -85,6 +85,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", healthHandler)
+	mux.HandleFunc("/health", healthHandler)
 	mux.HandleFunc("/todos", todosHandler)
 	mux.HandleFunc("/todos/", todoHandler)
 	mux.HandleFunc("/metrics", metrics)

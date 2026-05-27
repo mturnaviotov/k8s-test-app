@@ -12,7 +12,7 @@ export default function App() {
     const [editingText, setEditingText] = useState('');
 
     useEffect(() => {
-        fetch(`${API_URL}/healthz`)
+        fetch(`${API_URL}/health`)
             .then(res => setHealth(res.ok ? 'healthy' : 'unhealthy'))
             .catch(() => setHealth('unreachable'));
         fetchTodos();
